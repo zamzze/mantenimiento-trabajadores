@@ -1,0 +1,339 @@
+﻿@model IEnumerable<MantenimientoTrabajadores.Models.Trabajador>
+
+@{
+    ViewData["Title"] = "Listado de Trabajadores";
+}
+
+<div class="container mt-4">
+
+    <h2 class="text-center">Mantenimiento de Trabajadores</h2>
+
+    
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a asp-action="Create" class="btn btn-primary" data-bs-toggle="modal"
+           data-bs-target="#createModal">
+            Nuevo Trabajador
+        </a>
+        <form method="get" asp-action="Index" class="d-flex align-items-center gap-2">
+
+            <label class="mb-0">Sexo:</label>
+
+            <select name="sexo" class="form-select w-auto">
+                <option value="">-- Todos --</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary">
+                Filtrar
+            </button>
+
+        </form>
+    </div>
+    <div class="table-responsive">
+
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Foto</th>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>Tipo Documento</th>
+                <th>N° Documento</th>
+                <th>Sexo</th>
+                <th>Fecha Nac.</th>
+                <th>Dirección</th>
+                <th>Editar</th>
+                <th>Eliminar</th>
+
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.Foto))
+                        {
+                            <img src="~/fotos/@item.Foto" width="50" class="rounded" />
+                        }
+                    </td>
+                    <td>@item.Nombres</td>
+                    <td>@item.Apellidos</td>
+                    <td>@item.TipoDocumento</td>
+                    <td>@item.NumeroDocumento</td>
+                    <td>
+                        @if (item.Sexo == "Masculino")
+                        {
+                            <span class="badge bg-primary">Masculino</span>
+                        }
+                        else if (item.Sexo == "Femenino")
+                        {
+                            <span class="badge bg-warning text-dark">Femenino</span>
+                        }
+                    </td>
+                    <td>@item.FechaNacimiento.ToString("dd/MM/yyyy")</td>
+                    <td>@item.Direccion</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editModal"
+                                data-id="@item.Id"
+                                data-nombres="@item.Nombres"
+                                data-apellidos="@item.Apellidos"
+                                data-tipodocumento="@item.TipoDocumento"
+                                data-numerodocumento="@item.NumeroDocumento"
+                                data-sexo="@item.Sexo"
+                                data-fechanacimiento="@item.FechaNacimiento.ToString("yyyy-MM-dd")"
+                                data-direccion="@item.Direccion"
+                                data-foto="@item.Foto"
+                                title="Editar">
+                                <i class="bi bi-pencil-square"></i>
+                        </button>
+                        </td>
+                    <td>
+                        <button class="btn btn-sm btn-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal"
+                                data-id="@item.Id"
+                                data-nombre="@item.Nombres @item.Apellidos"
+                        title="Eliminar">
+                                <i class="bi bi-trash"></i>
+
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>
+</div>
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Confirmar eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form asp-action="Delete" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="deleteId" />
+
+                    <p>
+                        ¿Estás seguro que deseas eliminar al trabajador
+                        <strong id="deleteNombre"></strong>?
+                    </p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        Eliminar
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="createModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Registrar Trabajador</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+
+                <div class="modal-body">
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label class="form-label">Nombres</label>
+                            <input name="Nombres" class="form-control" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Apellidos</label>
+                            <input name="Apellidos" class="form-control" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Tipo Documento</label>
+                            <select name="TipoDocumento" class="form-select" required>
+                                <option>DNI</option>
+                                <option>Carnet de Extranjería</option>
+                                <option>Pasaporte</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Número Documento</label>
+                            <input name="NumeroDocumento" class="form-control" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Sexo</label>
+                            <select name="Sexo" class="form-select" required>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Femenino">Femenino</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha Nacimiento</label>
+                            <input type="date" name="FechaNacimiento" class="form-control" />
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Dirección</label>
+                            <input name="Direccion" class="form-control" />
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Foto</label>
+                            <input type="file" name="FotoFile" class="form-control" />
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Guardar
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title">Editar Trabajador</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+
+                <div class="modal-body">
+                    <input type="hidden" name="Id" id="editId" />
+                    <input type="hidden" name="Foto" id="editFotoActual" />
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label class="form-label">Nombres</label>
+                            <input name="Nombres" id="editNombres" class="form-control" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Apellidos</label>
+                            <input name="Apellidos" id="editApellidos" class="form-control" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Tipo Documento</label>
+                            <select name="TipoDocumento" id="editTipoDocumento" class="form-select" required>
+                                <option>DNI</option>
+                                <option>Carnet de Extranjería</option>
+                                <option>Pasaporte</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Número Documento</label>
+                            <input name="NumeroDocumento" id="editNumeroDocumento" class="form-control" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Sexo</label>
+                            <select name="Sexo" id="editSexo" class="form-select" required>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Femenino">Femenino</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha Nacimiento</label>
+                            <input type="date" name="FechaNacimiento" id="editFechaNacimiento" class="form-control" />
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Dirección</label>
+                            <input name="Direccion" id="editDireccion" class="form-control" />
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Cambiar Foto (opcional)</label>
+                            <input type="file" name="FotoFile" class="form-control" />
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-warning">
+                        Guardar cambios
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    var deleteModal = document.getElementById('deleteModal');
+
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+
+        var id = button.getAttribute('data-id');
+        var nombre = button.getAttribute('data-nombre');
+
+        document.getElementById('deleteId').value = id;
+        document.getElementById('deleteNombre').textContent = nombre;
+    });
+</script>
+<script>
+    var editModal = document.getElementById('editModal');
+
+    editModal.addEventListener('show.bs.modal', function (event) {
+
+        var button = event.relatedTarget;
+
+        document.getElementById('editId').value = button.getAttribute('data-id');
+        document.getElementById('editNombres').value = button.getAttribute('data-nombres');
+        document.getElementById('editApellidos').value = button.getAttribute('data-apellidos');
+        document.getElementById('editTipoDocumento').value = button.getAttribute('data-tipodocumento');
+        document.getElementById('editNumeroDocumento').value = button.getAttribute('data-numerodocumento');
+        document.getElementById('editSexo').value = button.getAttribute('data-sexo');
+        document.getElementById('editFechaNacimiento').value = button.getAttribute('data-fechanacimiento');
+        document.getElementById('editDireccion').value = button.getAttribute('data-direccion');
+        document.getElementById('editFotoActual').value = button.getAttribute('data-foto');
+
+    });
+</script>
