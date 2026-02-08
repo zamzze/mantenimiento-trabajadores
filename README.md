@@ -18,8 +18,7 @@ Módulo web para el mantenimiento de trabajadores desarrollado en ASP.NET Core M
 
 ## Base de Datos
 La base de datos fue desarrollada en SQL Server.
-Por limitaciones de los proveedores cloud gratuitos, la BD se ejecuta en entorno local.
-El proyecto es totalmente portable a SQL Server en la nube.
+El proyecto es totalmente portable a bases de datos en la nube.
 
 ## Autor
 Jaime Samuel Cerron Huertas
